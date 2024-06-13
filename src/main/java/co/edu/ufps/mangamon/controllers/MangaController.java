@@ -20,20 +20,15 @@ public class MangaController {
     private MangaService mangaService;
 
     @GetMapping
-    public List<Manga> getAllMangas() {
-        return mangaService.getAllMangas();
+    public ResponseEntity <?> getAllMangas() {
+        return ResponseEntity.ok(mangaService.getAllMangas());
     }
+@GetMapping("/{id}")
+    public ResponseEntity <?> getManga(@PathVariable String id) {
+        return mangaService.getMangaById(id);
+}
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Manga> getMangaById(@PathVariable Integer id) {
-        Manga manga = mangaService.getMangaById(id);
-        if (manga == null) {
-            return ResponseEntity.status(404).body(null);
-        }
-        return ResponseEntity.ok(manga);
-    }
-
-    @PostMapping
+@PostMapping
     public Manga createManga(@RequestBody Manga manga) {
         return mangaService.createManga(manga);
     }
@@ -61,3 +56,5 @@ public class MangaController {
         return status;
     }
 }
+
+
