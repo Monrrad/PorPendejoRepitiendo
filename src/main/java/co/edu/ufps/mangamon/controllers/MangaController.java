@@ -20,32 +20,44 @@ public class MangaController {
     private MangaService mangaService;
 
     @GetMapping
-    public ResponseEntity <?> getAllMangas() {
-        return ResponseEntity.ok(mangaService.getAllMangas());
+    public List<Manga> getAllMangas() {
+        return mangaService.getAllMangas();
     }
-@GetMapping("/{id}")
-    public ResponseEntity <?> getManga(@PathVariable String id) {
-        return mangaService.getMangaById(id);
-}
 
-@PostMapping
-    public Manga createManga(@RequestBody Manga manga) {
-        return mangaService.createManga(manga);
+    @GetMapping("/{id}")
+    public ResponseEntity <?> getManga(@PathVariable Integer id) {
+        try {
+            Manga manga = mangaService.getMangaById(id);
+            return ResponseEntity.ok(manga);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping
+    public Manga createManga(@RequestBody MangaDTO mangaDTO) {
+        return mangaService.createManga(mangaDTO);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Manga> updateManga(@PathVariable Integer id, @RequestBody Manga manga) {
-        Manga updatedManga = mangaService.updateManga(id, manga);
+    public ResponseEntity<Manga> updateManga(@PathVariable Integer id, @RequestBody MangaDTO mangaDTO) {
+
+        Manga updatedManga = mangaService.updateManga(id, mangaDTO);
         if (updatedManga == null) {
             return ResponseEntity.status(404).body(null);
         }
         return ResponseEntity.ok(updatedManga);
+
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteManga(@PathVariable Integer id) {
-        mangaService.deleteManga(id);
-        return ResponseEntity.ok("Manga deleted successfully");
+    public ResponseEntity<?> deleteManga(@PathVariable Integer id) {
+        try {
+            Manga manga = mangaService.deleteManga(id);
+            return ResponseEntity.ok(manga);
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body("Manga not found");
+        }
     }
 
     @GetMapping("/status")
@@ -56,5 +68,3 @@ public class MangaController {
         return status;
     }
 }
-
-

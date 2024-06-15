@@ -6,13 +6,15 @@ import java.time.LocalDate;
 
 @Data
 public class MangaDTO {
+
     private Integer id;
     private String nombre;
     private LocalDate fecha_lanzamiento;
-    private String temporadas;
-    private String paisId;
-    private String  anime;
-    private String juego;
-    private String pelicula;
-    private String tipoId;
+    private Integer temporadas;
+    private Integer paisId;
+    private Integer  anime;
+    private Integer juego;
+    private Integer pelicula;
+    private Integer tipoId;
+
 }

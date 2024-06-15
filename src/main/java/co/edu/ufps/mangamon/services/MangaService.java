@@ -1,5 +1,8 @@
 package co.edu.ufps.mangamon.services;
 import co.edu.ufps.mangamon.entities.Manga;
+import co.edu.ufps.mangamon.entities.Pais;
+import co.edu.ufps.mangamon.entities.Tipo;
+import co.edu.ufps.mangamon.models.MangaDTO;
 import co.edu.ufps.mangamon.repositories.MangaRepository;
 import co.edu.ufps.mangamon.repositories.PaisRepository;
 import co.edu.ufps.mangamon.repositories.TipoRepository;
@@ -8,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,37 +32,68 @@ public class MangaService {
         return mangaRepository.findAll();
     }
 
-    public ResponseEntity <?> getMangaById(String id) {
+    public Manga getMangaById(Integer id) {
 
-        Integer idManga = 0;
-        try {
+       Optional <Manga> manga = mangaRepository.findById(id);
+       if(manga.isPresent()) {
+           return manga.get();
+       } else {
+           throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+       }
 
-            idManga = Integer.parseInt(id);
-        } catch (Exception e){
-            return new ResponseEntity(new Mensaje("Id de manga No es un entero", 500), HttpStatus.BAD_REQUEST);
-
-        }
-       Optional <Manga> mangaOpt = mangaRepository.findById(idManga);
-       if (mangaOpt.isPresent()) {
-           return ResponseEntity.ok(mangaOpt.get());
-       } else
-       return new ResponseEntity(new Mensaje("Manga No Encontrado",404), HttpStatus.NOT_FOUND);
     }
 
-    public Manga createManga(Manga manga) {
+    public Manga createManga(MangaDTO mangaDTO) {
+        Manga manga = new Manga();
+        manga.setNombre(mangaDTO.getNombre());
+        manga.setFechaLanzamiento(mangaDTO.getFecha_lanzamiento());
+        manga.setTemporadas(mangaDTO.getTemporadas());
+        manga.setAnime(mangaDTO.getAnime());
+        manga.setJuego(mangaDTO.getJuego());
+        manga.setPelicula(mangaDTO.getPelicula());
+
+        Optional<Pais> pais = paisRepository.findById(mangaDTO.getPaisId());
+
+        Optional<Tipo> tipo = tipoRepository.findById(mangaDTO.getTipoId());
+
+        if (pais.isPresent() && tipo.isPresent()) {
+            manga.setPais(pais.get());
+            manga.setTipo(tipo.get());
+        }
+
         return mangaRepository.save(manga);
     }
 
-    public Manga updateManga(Integer id, Manga manga) {
+    public Manga updateManga(Integer id, MangaDTO mangaDTO) {
 
-        if (mangaRepository.existsById(id)) {
-            manga.setId(id);
-            return mangaRepository.save(manga);
+        Manga mangaFound = getMangaById(id);
+
+        mangaFound.setNombre(mangaDTO.getNombre());
+        mangaFound.setFechaLanzamiento(mangaDTO.getFecha_lanzamiento());
+        mangaFound.setTemporadas(mangaDTO.getTemporadas());
+        mangaFound.setAnime(mangaDTO.getAnime());
+        mangaFound.setJuego(mangaDTO.getJuego());
+        mangaFound.setPelicula(mangaDTO.getPelicula());
+
+        Optional<Pais> pais = paisRepository.findById(mangaDTO.getPaisId());
+
+        Optional<Tipo> tipo = tipoRepository.findById(mangaDTO.getTipoId());
+
+        if (pais.isPresent() && tipo.isPresent()) {
+            mangaFound.setPais(pais.get());
+            mangaFound.setTipo(tipo.get());
         }
-        return null;
+
+        return mangaFound;
     }
 
-    public void deleteManga(Integer id) {
-        mangaRepository.deleteById(id);
+    public Manga deleteManga(Integer id) {
+        Manga mangaFound = getMangaById(id);
+        if (mangaFound != null) {
+            mangaRepository.delete(mangaFound);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        return mangaFound;
     }
 }

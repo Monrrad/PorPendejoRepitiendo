@@ -20,7 +20,7 @@ public class UsuarioController {
 
     @GetMapping("/{username}/favoritos")
     public ResponseEntity <?> getFavorites(@PathVariable String username) {
-        return usuarioService.getFavorites(username);
+        return usuarioService.getFavoritesMangas(username);
     }
 
 }

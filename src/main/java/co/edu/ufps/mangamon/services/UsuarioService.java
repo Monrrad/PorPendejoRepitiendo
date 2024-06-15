@@ -20,11 +20,11 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
-public ResponseEntity<?> getFavorites (String username){
+    public ResponseEntity<?> getFavoritesMangas (String username){
 
-   Usuario usuario = usuarioRepository.findByUsername(username);
-   List<Manga> mangas = usuario.getMangas();
-   return ResponseEntity.ok(mangas);
-}
+       Usuario usuario = usuarioRepository.findByUsername(username);
+       return ResponseEntity.ok(usuario.getMangas());
+
+    }
 
 }
